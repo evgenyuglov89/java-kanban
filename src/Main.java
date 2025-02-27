@@ -48,7 +48,19 @@ public class Main {
                 completeSecondLesson.getEpicId(), TaskStatus.DONE));
 
 //        manager.deleteById(4);
-        System.out.println(manager.getSubTaskByEpic(3));
+//        System.out.println(manager.getSubTaskByEpic(3));
         System.out.println(manager.getAll());
+        manager.createTask(new Subtask("Выполнить третий урок",
+                "Прочитать теорию и выполнить практику",
+                TaskManager.getNewId(), understandingEncapsulationInOOP.getId()));
+//        manager.deleteAllTasks();
+        System.out.println(manager.getAll());
+//        manager.deleteAllSubTasks();
+//        System.out.println(manager.getAll());
+//        manager.deleteAllEpics();
+//        System.out.println(manager.getAll());
+//        System.out.println(manager.getAllEpics());
+//        System.out.println(manager.getAllTasks());
+//        System.out.println(manager.getAllSubTasks());
     }
 }

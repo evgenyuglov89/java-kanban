@@ -17,6 +17,14 @@ public class Main {
         Subtask completeSecondLesson = new Subtask("Выполнить второй урок",
                 "Прочитать теорию и выполнить практику",
                 TaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+        Epic understandingEncapsulationInOOP2 = new Epic("Пройти тему ООП. Инкапсуляция",
+                "Пройти все уроки и выполнить все упражнения", TaskManager.getNewId());
+        Subtask completeFirstLesson2 = new Subtask("Выполнить первый урок",
+                "Прочитать теорию и выполнить практику",
+                TaskManager.getNewId(), understandingEncapsulationInOOP2.getId());
+        Subtask completeSecondLesson2 = new Subtask("Выполнить второй урок",
+                "Прочитать теорию и выполнить практику",
+                TaskManager.getNewId(), understandingEncapsulationInOOP2.getId());
 
         List<Integer> subtaskIds = new ArrayList<>();
         subtaskIds.add(completeFirstLesson.getId());
@@ -24,9 +32,18 @@ public class Main {
 
         understandingEncapsulationInOOP.setSubTasks(subtaskIds);
 
+        List<Integer> subtaskIds2 = new ArrayList<>();
+        subtaskIds2.add(completeFirstLesson2.getId());
+        subtaskIds2.add(completeSecondLesson2.getId());
+
+        understandingEncapsulationInOOP2.setSubTasks(subtaskIds2);
+
         System.out.println(understandingEncapsulationInOOP);
         System.out.println(completeFirstLesson);
         System.out.println(completeSecondLesson);
+        System.out.println(understandingEncapsulationInOOP2);
+        System.out.println(completeFirstLesson2);
+        System.out.println(completeSecondLesson2);
         System.out.println(shoppingTask);
         System.out.println(cleaningTask);
 
@@ -39,6 +56,9 @@ public class Main {
         manager.createTask(understandingEncapsulationInOOP);
         manager.createTask(completeFirstLesson);
         manager.createTask(completeSecondLesson);
+        manager.createTask(understandingEncapsulationInOOP2);
+        manager.createTask(completeFirstLesson2);
+        manager.createTask(completeSecondLesson2);
 
         manager.updateTask(new Subtask(completeFirstLesson.getName(),
                 completeFirstLesson.getDescription(), completeFirstLesson.getId(),
@@ -50,13 +70,15 @@ public class Main {
 //        manager.deleteById(4);
 //        System.out.println(manager.getSubTaskByEpic(3));
         System.out.println(manager.getAll());
-        manager.createTask(new Subtask("Выполнить третий урок",
+       /*
+       manager.createTask(new Subtask("Выполнить третий урок",
                 "Прочитать теорию и выполнить практику",
                 TaskManager.getNewId(), understandingEncapsulationInOOP.getId()));
+        */
 //        manager.deleteAllTasks();
-        System.out.println(manager.getAll());
-//        manager.deleteAllSubTasks();
 //        System.out.println(manager.getAll());
+        manager.deleteAllSubTasks();
+        System.out.println(manager.getAll());
 //        manager.deleteAllEpics();
 //        System.out.println(manager.getAll());
 //        System.out.println(manager.getAllEpics());

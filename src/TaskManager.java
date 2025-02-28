@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class TaskManager {
     private static int taskId = 1;
@@ -58,20 +55,22 @@ public class TaskManager {
     }
 
     public void deleteAllSubTasks() {
-        int epicId = 0;
+        Set<Integer> epicIds = new HashSet<>();;
         Iterator<Task> iterator = tasks.values().iterator();
         while (iterator.hasNext()) {
             Task task = iterator.next();
             if (task instanceof Subtask) {
-                epicId = ((Subtask) task).getEpicId();
+                epicIds.add(((Subtask) task).getEpicId());
                 iterator.remove();
             }
         }
 
-        if (epicId != 0) {
+        for (int epicId : epicIds) {
             Epic epic = (Epic) tasks.get(epicId);
-            epic.setSubTasks(new ArrayList<Integer>());
-            updateEpicStatus(epicId);
+            if (epic != null) {
+                epic.setSubTasks(new ArrayList<Integer>());
+                updateEpicStatus(epicId);
+            }
         }
     }
 

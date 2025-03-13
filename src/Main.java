@@ -1,5 +1,7 @@
 import manager.HistoryManager;
 import manager.InMemoryTaskManager;
+import manager.Managers;
+import manager.TaskManager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -57,7 +59,7 @@ public class Main {
         shoppingTask = new Task(shoppingTask.getName(), shoppingTask.getDescription(),
                 shoppingTask.getId(), TaskStatus.IN_PROGRESS);
 
-        InMemoryTaskManager manager = new InMemoryTaskManager();
+        TaskManager manager = Managers.getDefault();
         manager.createTask(shoppingTask);
         manager.createTask(cleaningTask);
         manager.createTask(understandingEncapsulationInOOP);

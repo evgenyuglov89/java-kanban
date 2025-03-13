@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import task.TaskStatus;
 
 class TaskManagerTest {
-    private InMemoryTaskManager taskManager;
+    private TaskManager taskManager;
     private HistoryManager historyManager;
     private Task task1;
     private Task task2;

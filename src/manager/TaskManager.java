@@ -2,6 +2,7 @@ package manager;
 
 import task.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -18,4 +19,19 @@ public interface TaskManager {
 
     void deleteById(Integer id);
 
+    HistoryManager getHistoryManager();
+
+    ArrayList<Task> getSubTaskByEpic(int epicId);
+
+    void deleteAllEpics();
+
+    void deleteAllSubTasks();
+
+    void deleteAllTasks();
+
+    List<Task> getAllEpics();
+
+    List<Task> getAllSubTasks();
+
+    List<Task> getAllTasks();
 }

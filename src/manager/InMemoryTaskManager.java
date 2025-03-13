@@ -1,17 +1,27 @@
+package manager;
+
+import task.Epic;
+import task.Subtask;
+import task.Task;
+import task.TaskStatus;
+
 import java.util.*;
 
-public class TaskManager {
+public class InMemoryTaskManager implements TaskManager {
     private static int taskId = 1;
     private HashMap<Integer, Task> tasks;
+    private HistoryManager historyManager;
 
-    public TaskManager() {
-        this.tasks = new HashMap<>();
+    public InMemoryTaskManager() {
+        tasks = new HashMap<>();
+        historyManager = Managers.getDefaultHistory();
     }
 
     public static int getNewId() {
-        return taskId++;
+        return InMemoryTaskManager.taskId++;
     }
 
+    @Override
     public List<Task> getAll() {
         return new ArrayList<Task>(tasks.values());
     }
@@ -46,6 +56,7 @@ public class TaskManager {
         return allEpics;
     }
 
+    @Override
     public void deleteAll() {
         tasks.clear();
     }
@@ -78,10 +89,16 @@ public class TaskManager {
         tasks.values().removeIf(task -> task instanceof Subtask || task instanceof Epic);
     }
 
+    @Override
     public Task getById(int id) {
-        return tasks.get(id);
+        Task task = tasks.get(id);
+        if (task != null) {
+            historyManager.add(task);
+        }
+        return task;
     }
 
+    @Override
     public void createTask(Task task) {
         tasks.put(task.getId(), task);
 
@@ -93,6 +110,7 @@ public class TaskManager {
         }
     }
 
+    @Override
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
 
@@ -138,6 +156,7 @@ public class TaskManager {
         tasks.put(newEpic.getId(), newEpic);
     }
 
+    @Override
     public void deleteById(Integer id) {
         Task deletedTask = tasks.remove(id);
         if (deletedTask instanceof Subtask subtask) {
@@ -161,5 +180,9 @@ public class TaskManager {
         }
 
         return subTaskByEpic;
+    }
+
+    public HistoryManager getHistoryManager() {
+        return historyManager;
     }
 }

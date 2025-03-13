@@ -1,3 +1,5 @@
+package task;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class Epic extends Task {
     }
 
     public void addSubTask(int subTaskId) {
-        if (!subTasksIds.contains(subTaskId)) {
+        if (!subTasksIds.contains(subTaskId) && subTaskId != this.getId()) {
             subTasksIds.add(subTaskId);
         }
     }
@@ -34,7 +36,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "task.Epic{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", id=" + id +

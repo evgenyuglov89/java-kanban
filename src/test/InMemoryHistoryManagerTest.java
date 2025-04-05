@@ -8,7 +8,6 @@ import task.Subtask;
 import task.Task;
 
 import java.util.List;
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

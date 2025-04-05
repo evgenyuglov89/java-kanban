@@ -66,17 +66,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        tasks.values().removeIf(task -> !(task instanceof Subtask) && !(task instanceof Epic));
+        Iterator<Map.Entry<Integer, Task>> iterator = tasks.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Task> entry = iterator.next();
+            Task task = entry.getValue();
+
+            if (!(task instanceof Subtask) && !(task instanceof Epic)) {
+                historyManager.remove(task.getId()); // Удаляем из истории
+                iterator.remove();
+            }
+        }
     }
 
     @Override
     public void deleteAllSubTasks() {
-        Set<Integer> epicIds = new HashSet<>();;
-        Iterator<Task> iterator = tasks.values().iterator();
+        Set<Integer> epicIds = new HashSet<>();
+        Iterator<Map.Entry<Integer, Task>> iterator = tasks.entrySet().iterator();
         while (iterator.hasNext()) {
-            Task task = iterator.next();
+            Map.Entry<Integer, Task> entry = iterator.next();
+            Task task = entry.getValue();
             if (task instanceof Subtask) {
                 epicIds.add(((Subtask) task).getEpicId());
+                historyManager.remove(task.getId()); // Удаляем из истории
                 iterator.remove();
             }
         }
@@ -84,7 +95,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (int epicId : epicIds) {
             Epic epic = (Epic) tasks.get(epicId);
             if (epic != null) {
-                epic.setSubTasks(new ArrayList<Integer>());
+                epic.setSubTasks(new ArrayList<>());
                 updateEpicStatus(epicId);
             }
         }
@@ -92,7 +103,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-        tasks.values().removeIf(task -> task instanceof Subtask || task instanceof Epic);
+        Iterator<Map.Entry<Integer, Task>> iterator = tasks.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Task> entry = iterator.next();
+            Task task = entry.getValue();
+            if (task instanceof Epic || task instanceof Subtask) {
+                historyManager.remove(task.getId()); // Удаляем из истории
+                iterator.remove();
+            }
+        }
     }
 
     @Override
@@ -165,6 +184,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteById(Integer id) {
         Task deletedTask = tasks.remove(id);
+        historyManager.remove(id);
         if (deletedTask instanceof Subtask subtask) {
             Epic epic = (Epic) tasks.get(subtask.getEpicId());
             epic.removeSubTask(id);
@@ -174,6 +194,7 @@ public class InMemoryTaskManager implements TaskManager {
             List<Integer> subtaskIds = ((Epic) deletedTask).getSubTasks();
             for (Integer subTaskId : subtaskIds) {
                 tasks.remove(subTaskId);
+                historyManager.remove(subTaskId);
             }
         }
     }
@@ -193,5 +214,4 @@ public class InMemoryTaskManager implements TaskManager {
     public HistoryManager getHistoryManager() {
         return historyManager;
     }
-
 }

@@ -13,7 +13,8 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        
+
+        // Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
         Task shoppingTask = new Task("Сходить в магазин", "Купить продуктов на неделю",
                 InMemoryTaskManager.getNewId());
         Task cleaningTask = new Task("Убраться дома", "Протереть пыль, помыть полы, убрать вещи",
@@ -26,40 +27,23 @@ public class Main {
         Subtask completeSecondLesson = new Subtask("Выполнить второй урок",
                 "Прочитать теорию и выполнить практику",
                 InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
-        Epic understandingEncapsulationInOOP2 = new Epic("Пройти тему ООП. Инкапсуляция",
-                "Пройти все уроки и выполнить все упражнения", InMemoryTaskManager.getNewId());
         Subtask completeFirstLesson2 = new Subtask("Выполнить первый урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP2.getId());
-        Subtask completeSecondLesson2 = new Subtask("Выполнить второй урок",
-                "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP2.getId());
+                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+        Epic understandingEncapsulationInOOP2 = new Epic("Пройти тему ООП. Инкапсуляция",
+                "Пройти все уроки и выполнить все упражнения", InMemoryTaskManager.getNewId());
+
 
         List<Integer> subtaskIds = new ArrayList<>();
         subtaskIds.add(completeFirstLesson.getId());
         subtaskIds.add(completeSecondLesson.getId());
+        subtaskIds.add(completeFirstLesson2.getId());
 
         understandingEncapsulationInOOP.setSubTasks(subtaskIds);
 
-        List<Integer> subtaskIds2 = new ArrayList<>();
-        subtaskIds2.add(completeFirstLesson2.getId());
-        subtaskIds2.add(completeSecondLesson2.getId());
-
-        understandingEncapsulationInOOP2.setSubTasks(subtaskIds2);
-
-        System.out.println(understandingEncapsulationInOOP);
-        System.out.println(completeFirstLesson);
-        System.out.println(completeSecondLesson);
-        System.out.println(understandingEncapsulationInOOP2);
-        System.out.println(completeFirstLesson2);
-        System.out.println(completeSecondLesson2);
-        System.out.println(shoppingTask);
-        System.out.println(cleaningTask);
-
-        shoppingTask = new Task(shoppingTask.getName(), shoppingTask.getDescription(),
-                shoppingTask.getId(), TaskStatus.IN_PROGRESS);
-
         TaskManager manager = Managers.getDefault();
+        HistoryManager historyManager = manager.getHistoryManager();
+
         manager.createTask(shoppingTask);
         manager.createTask(cleaningTask);
         manager.createTask(understandingEncapsulationInOOP);
@@ -67,46 +51,51 @@ public class Main {
         manager.createTask(completeSecondLesson);
         manager.createTask(understandingEncapsulationInOOP2);
         manager.createTask(completeFirstLesson2);
-        manager.createTask(completeSecondLesson2);
 
-        manager.updateTask(new Subtask(completeFirstLesson.getName(),
-                completeFirstLesson.getDescription(), completeFirstLesson.getId(),
-                completeFirstLesson.getEpicId(), TaskStatus.DONE));
-        manager.updateTask(new Subtask(completeSecondLesson.getName(),
-                completeSecondLesson.getDescription(), completeSecondLesson.getId(),
-                completeSecondLesson.getEpicId(), TaskStatus.DONE));
-
-//        manager.deleteById(4);
-//        System.out.println(manager.getSubTaskByEpic(3));
-        System.out.println(manager.getAll());
-       /*
-       manager.createTask(new task.Subtask("Выполнить третий урок",
-                "Прочитать теорию и выполнить практику",
-                manager.TaskManager.getNewId(), understandingEncapsulationInOOP.getId()));
-        */
-//        manager.deleteAllTasks();
-//        System.out.println(manager.getAll());
-//        manager.deleteAllSubTasks();
-//        System.out.println(manager.getAll());
-//        manager.deleteAllEpics();
-//        System.out.println(manager.getAll());
-//        System.out.println(manager.getAllEpics());
-//        System.out.println(manager.getAllTasks());
-//        System.out.println(manager.getAllSubTasks());
-
+        // Запросите созданные задачи несколько раз в разном порядке.
+        // После каждого запроса выведите историю и убедитесь, что в ней нет повторов.
         manager.getById(1);
+        printHistory(historyManager.getHistory());
         manager.getById(2);
+        printHistory(historyManager.getHistory());
         manager.getById(3);
+        printHistory(historyManager.getHistory());
         manager.getById(4);
+        printHistory(historyManager.getHistory());
         manager.getById(1);
+        printHistory(historyManager.getHistory());
         manager.getById(2);
+        printHistory(historyManager.getHistory());
         manager.getById(3);
+        printHistory(historyManager.getHistory());
         manager.getById(4);
+        printHistory(historyManager.getHistory());
         manager.getById(3);
+        printHistory(historyManager.getHistory());
         manager.getById(2);
+        printHistory(historyManager.getHistory());
         manager.getById(4);
+        printHistory(historyManager.getHistory());
         manager.getById(5);
-        HistoryManager historyManager = manager.getHistoryManager();
-        System.out.println(historyManager.getHistory());
+        printHistory(historyManager.getHistory());
+        manager.getById(6);
+        printHistory(historyManager.getHistory());
+        manager.getById(7);
+        printHistory(historyManager.getHistory());
+
+        // Удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться.
+        manager.deleteById(2);
+        printHistory(historyManager.getHistory());
+
+        // Удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
+        manager.deleteById(3);
+        printHistory(historyManager.getHistory());
+    }
+
+    static void printHistory(List<Task> history) {
+        for (Task task : history) {
+            System.out.println(task); // каждый task на новой строке
+        }
+        System.out.println(); // пустая строка после каждого вызова
     }
 }

@@ -89,25 +89,35 @@ public class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void getHistory_WhenMoreThan10TasksViewed_ShouldTrimToLast10() {
+    void getHistory_WhenMoreThan10TasksViewed_ShouldPreserveLastViewOrder() {
         List<Task> tasksToAccess = List.of(
                 task2, task5, subtask4, subtask1, epic1,
                 task1, task4, task3, task8, subtask2, epic2
         );
 
-        tasksToAccess.forEach(task -> {
-            taskManager.getById(task.getId());
-        });
+        tasksToAccess.forEach(task -> taskManager.getById(task.getId()));
 
         List<Task> history = historyManager.getHistory();
 
         List<Task> expectedHistory = List.of(
-                task5, subtask4, subtask1, epic1, task1,
-                task4, task3, task8, subtask2, epic2
+                task2, task5, subtask4, subtask1, epic1,
+                task1, task4, task3, task8, subtask2, epic2
         );
 
         assertEquals(expectedHistory, history,
-                "История должна содержать последние 10 уникальных задач в порядке просмотра");
-        assertEquals(10, history.size(), "Размер истории должен быть 10");
+                "История должна содержать последние уникальные задачи в порядке просмотра");
+        assertEquals(11, history.size(), "История должна содержать 11 задач");
+    }
+
+    @Test
+    void getHistory_ShouldMoveRevisitedTaskToEnd() {
+        taskManager.getById(task1.getId());
+        taskManager.getById(task2.getId());
+        taskManager.getById(task1.getId());
+
+        List<Task> history = historyManager.getHistory();
+        List<Task> expected = List.of(task2, task1);
+
+        assertEquals(expected, history);
     }
 }

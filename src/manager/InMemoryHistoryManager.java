@@ -1,7 +1,6 @@
 package manager;
 
 import task.Task;
-import task.TaskNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,12 +8,9 @@ import java.util.Map;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private static final int MAX_HISTORY_SIZE = 10;
-
     private final Map<Integer, TaskNode<Task>> historyMap = new HashMap<>();
     private TaskNode<Task> head;
     private TaskNode<Task> tail;
-    private int size = 0;
 
     @Override
     public void add(Task task) {
@@ -24,10 +20,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         if (historyMap.containsKey(taskId)) {
             remove(taskId);
-        }
-
-        if (size >= MAX_HISTORY_SIZE && head != null) {
-            remove(head.data.getId());
         }
 
         TaskNode<Task> newNode = linkLast(task);
@@ -62,7 +54,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             newNode.prev = tail;
         }
         tail = newNode;
-        size++;
         return newNode;
     }
 
@@ -81,7 +72,41 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             next.setPrev(prev);
         }
+    }
 
-        size--;
+    private static class TaskNode<T extends Task> {
+        T data;
+        TaskNode<T> next;
+        TaskNode<T> prev;
+
+        TaskNode(TaskNode<T> prev, T current, TaskNode<T> next) {
+            this.data = current;
+            this.next = next;
+            this.prev = prev;
+        }
+
+        T getData() {
+            return data;
+        }
+
+        TaskNode<T> getNext() {
+            return next;
+        }
+
+        TaskNode<T> getPrev() {
+            return prev;
+        }
+
+        void setData(T data) {
+            this.data = data;
+        }
+
+        void setNext(TaskNode<T> next) {
+            this.next = next;
+        }
+
+        void setPrev(TaskNode<T> prev) {
+            this.prev = prev;
+        }
     }
 }

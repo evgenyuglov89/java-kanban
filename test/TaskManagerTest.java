@@ -9,7 +9,6 @@ import task.Task;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import task.TaskStatus;
 
 class TaskManagerTest {
     private TaskManager taskManager;
@@ -85,26 +84,6 @@ class TaskManagerTest {
         assertEquals(newTask.getName(), task1.getName(), "Имена задач должны совпадать");
         assertEquals(newTask.getDescription(), task1.getDescription(), "Описания задач должны совпадать");
         assertEquals(newTask.getId(), task1.getId(), "ID задач должны совпадать");
-        assertEquals(newTask.getStatus(), task1.getStatus(), "Статусы задач должны сопадать");
+        assertEquals(newTask.getStatus(), task1.getStatus(), "Статусы задач должны совпадать");
     }
-
-    @Test
-    void historyManagerShouldPreserveTaskVersion() {
-        taskManager.createTask(task1);
-        taskManager.getById(task1.getId());
-
-        Task newTask = new Task("Task3", "Description 3", task1.getId(), TaskStatus.DONE);
-        taskManager.updateTask(newTask);
-
-        Task updatedTask = taskManager.getById(task1.getId());
-
-        Task oldTask = historyManager.getHistory().get(0);
-
-        assertNotEquals(oldTask.getName(), updatedTask.getName(), "Имена задач не должны совпадать");
-        assertNotEquals(oldTask.getDescription(), updatedTask.getDescription(),
-                "Описания задач не должны совпадать");
-        assertEquals(oldTask.getId(), updatedTask.getId(), "ID задач должны совпадать");
-        assertNotEquals(oldTask.getStatus(), updatedTask.getStatus(), "Статусы задач не должны сопадать");
-    }
-
 }

@@ -1,11 +1,9 @@
-import manager.HistoryManager;
-import manager.InMemoryTaskManager;
-import manager.Managers;
-import manager.TaskManager;
+import manager.*;
 import task.Epic;
 import task.Subtask;
 import task.Task;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,10 +82,6 @@ public class Main {
 
         // Удалите задачу, которая есть в истории, и проверьте, что при печати она не будет выводиться.
         manager.deleteById(2);
-        printHistory(historyManager.getHistory());
-
-        // Удалите эпик с тремя подзадачами и убедитесь, что из истории удалился как сам эпик, так и все его подзадачи.
-        manager.deleteById(3);
         printHistory(historyManager.getHistory());
     }
 

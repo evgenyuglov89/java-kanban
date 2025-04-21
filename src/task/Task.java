@@ -60,4 +60,26 @@ public class Task {
                 ", status='" + status + '\'' +
                 '}';
     }
+
+    public static Task fromString(String value) {
+        String[] parts = value.split(",", -1);
+        int id = Integer.parseInt(parts[0]);
+        TaskType type = TaskType.valueOf(parts[1]);
+        String name = parts[2];
+        TaskStatus status = TaskStatus.valueOf(parts[3]);
+        String description = parts[4];
+
+        return switch (type) {
+            case TASK -> new Task(name, description, id, status);
+            case EPIC -> new Epic(name, description, id, status);
+            case SUBTASK -> {
+                int epicId = Integer.parseInt(parts[5]);
+                yield new Subtask(name, description, id, epicId, status);
+            }
+        };
+    }
+
+    public String getType() {
+        return getClass().getSimpleName().toUpperCase();
+    }
 }

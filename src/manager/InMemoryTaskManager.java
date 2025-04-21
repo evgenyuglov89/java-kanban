@@ -8,8 +8,8 @@ import task.TaskStatus;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private static int taskId = 1;
-    private HashMap<Integer, Task> tasks;
+    protected static int taskId = 1;
+    protected HashMap<Integer, Task> tasks;
     private HistoryManager historyManager;
 
     public InMemoryTaskManager() {
@@ -213,5 +213,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public HistoryManager getHistoryManager() {
         return historyManager;
+    }
+
+    public void setTaskId(int id) {
+        taskId = id;
     }
 }

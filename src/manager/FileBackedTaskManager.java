@@ -27,8 +27,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     writer.newLine();
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ManagerSaveException(e.getMessage());
         }
     }

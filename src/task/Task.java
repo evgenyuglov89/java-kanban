@@ -7,12 +7,14 @@ public class Task {
     protected String description;
     protected int id;
     protected TaskStatus status;
+    protected TaskType type;
 
     public Task(String name, String description, int id) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = TaskStatus.NEW;
+        this.type = TaskType.TASK;
     }
 
     public Task(String name, String description, int id, TaskStatus status) {
@@ -20,6 +22,7 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+        this.type = TaskType.TASK;
     }
 
     public String getName() {
@@ -59,5 +62,27 @@ public class Task {
                 ", id=" + id +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    public static Task fromString(String value) {
+        String[] parts = value.split(",", -1);
+        int id = Integer.parseInt(parts[0]);
+        TaskType type = TaskType.valueOf(parts[1]);
+        String name = parts[2];
+        TaskStatus status = TaskStatus.valueOf(parts[3]);
+        String description = parts[4];
+
+        return switch (type) {
+            case TASK -> new Task(name, description, id, status);
+            case EPIC -> new Epic(name, description, id, status);
+            case SUBTASK -> {
+                int epicId = Integer.parseInt(parts[5]);
+                yield new Subtask(name, description, id, epicId, status);
+            }
+        };
+    }
+
+    public TaskType getType() {
+        return type;
     }
 }

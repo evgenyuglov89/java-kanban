@@ -17,7 +17,7 @@ public class FileBackedTaskManagerTest {
 
     @BeforeEach
     public void setup() {
-        taskManager = new FileBackedTaskManager();
+        taskManager = new FileBackedTaskManager("tasks.csv");
 
         task1 = createTask("Task1", "1");
         epic2 = new Epic("Epic1", "1", InMemoryTaskManager.getNewId());
@@ -36,7 +36,7 @@ public class FileBackedTaskManagerTest {
     public void save_EmptyTaskManagerTest() throws IOException {
         taskManager.save();
 
-        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(new File(FileBackedTaskManager.SAVE_PATH));
+        FileBackedTaskManager loaded = FileBackedTaskManager.loadFromFile(new File(taskManager.getSavePath()));
 
         assertTrue(loaded.getAll().isEmpty());
     }
@@ -48,7 +48,7 @@ public class FileBackedTaskManagerTest {
         taskManager.createTask(subtask3);
 
         FileBackedTaskManager loadedManager =
-                FileBackedTaskManager.loadFromFile(new File(FileBackedTaskManager.SAVE_PATH));
+                FileBackedTaskManager.loadFromFile(new File(taskManager.getSavePath()));
 
         assertEquals(task1, loadedManager.getById(task1.getId()));
         assertEquals(epic2, loadedManager.getById(epic2.getId()));

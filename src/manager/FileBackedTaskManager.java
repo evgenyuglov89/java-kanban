@@ -10,14 +10,19 @@ import java.util.List;
 import java.util.Map;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    public static final String SAVE_PATH = "tasks.csv";
+    private final String savePath;
 
-    public FileBackedTaskManager() {
+    public FileBackedTaskManager(String savePath) {
         super();
+        this.savePath = savePath;
+    }
+
+    public String getSavePath() {
+        return savePath;
     }
 
     public void save() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FileBackedTaskManager.SAVE_PATH))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(savePath))) {
             writer.write("id,type,name,status,description,epic");
             writer.newLine();
 
@@ -31,70 +36,61 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             throw new ManagerSaveException(e.getMessage());
         }
     }
-
-    public List<Task> getAll() {
-        List<Task> allTasks = super.getAll();
-        save();
-        return allTasks;
-    }
-
-    public List<Task> getAllSubTasks() {
-        List<Task> allSubTasks = super.getAllSubTasks();
-        save();
-        return allSubTasks;
-    }
-
-    public List<Task> getAllEpics() {
-        List<Task> allEpics = super.getAllEpics();
-        save();
-        return allEpics;
-    }
-
+    @Override
     public void deleteAll() {
         super.deleteAll();
         save();
     }
 
+    @Override
     public void deleteAllTasks() {
         super.deleteAllTasks();
         save();
     }
 
+    @Override
     public void deleteAllSubTasks() {
         super.deleteAllSubTasks();
         save();
     }
 
+    @Override
     public void deleteAllEpics() {
         super.deleteAllEpics();
         save();
     }
 
+    @Override
     public Task getById(int id) {
         Task task = super.getById(id);
         save();
         return task;
     }
 
+    @Override
     public void createTask(Task task) {
         super.createTask(task);
         save();
     }
 
+    @Override
     public void updateTask(Task task) {
         super.updateTask(task);
         save();
     }
 
+    @Override
     public void deleteById(Integer id) {
         super.deleteById(id);
         save();
     }
 
+    @Override
     public void setTaskId(int id) {
         super.setTaskId(id);
     }
 
+    @Override
     public ArrayList<Task> getSubTaskByEpic(int epicId) {
         ArrayList<Task> subTaskByEpic = super.getSubTaskByEpic(epicId);
         save();
@@ -119,7 +115,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
-        FileBackedTaskManager manager = new FileBackedTaskManager();
+        FileBackedTaskManager manager = new FileBackedTaskManager("tasks.csv");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String header = reader.readLine(); // пропускаем заголовок
@@ -130,9 +126,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = Task.fromString(line);
 
                 switch (task.getType()) {
-                    case "TASK" -> manager.tasks.put(task.getId(), task);
-                    case "EPIC" -> manager.tasks.put(task.getId(), (Epic) task);
-                    case "SUBTASK" -> {
+                    case TASK -> manager.tasks.put(task.getId(), task);
+                    case EPIC -> manager.tasks.put(task.getId(), (Epic) task);
+                    case SUBTASK -> {
                         Subtask sub = (Subtask) task;
                         manager.tasks.put(task.getId(), sub);
 
@@ -149,7 +145,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             manager.setTaskId(id);
 
         } catch (IOException e) {
-            throw new RuntimeException("Ошибка при чтении файла", e);
+            throw new ManagerSaveException(e.getMessage());
         }
 
         return manager;
@@ -192,8 +188,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         manager.createTask(understandingEncapsulationInOOP2);
         manager.createTask(completeFirstLesson2);
 
+        FileBackedTaskManager fileBacked = (FileBackedTaskManager) manager;
+        String savePath = fileBacked.getSavePath();
+
         FileBackedTaskManager fileManager =
-                FileBackedTaskManager.loadFromFile(new File(FileBackedTaskManager.SAVE_PATH));
+                FileBackedTaskManager.loadFromFile(new File(savePath));
         System.out.println(fileManager.getAll());
     }
 }

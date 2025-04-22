@@ -7,12 +7,14 @@ public class Task {
     protected String description;
     protected int id;
     protected TaskStatus status;
+    protected TaskType type;
 
     public Task(String name, String description, int id) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = TaskStatus.NEW;
+        this.type = TaskType.TASK;
     }
 
     public Task(String name, String description, int id, TaskStatus status) {
@@ -20,6 +22,7 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
+        this.type = TaskType.TASK;
     }
 
     public String getName() {
@@ -79,7 +82,7 @@ public class Task {
         };
     }
 
-    public String getType() {
-        return getClass().getSimpleName().toUpperCase();
+    public TaskType getType() {
+        return type;
     }
 }

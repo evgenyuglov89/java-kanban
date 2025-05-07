@@ -229,6 +229,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void setTaskId(int id) {
         taskId = id;
     }
+
     private boolean isTimeSlotAvailable(Task task) {
         LocalDateTime newStart = task.getStartTime();
         LocalDateTime newEnd = task.getEndTime();

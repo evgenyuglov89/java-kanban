@@ -4,7 +4,11 @@ import exception.ManagerSaveException;
 import task.Epic;
 import task.Subtask;
 import task.Task;
+import task.TaskType;
+
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +27,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(savePath))) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write("id,type,name,status,description,epic,start_time,duration");
             writer.newLine();
 
             if (!tasks.isEmpty()) {
@@ -99,7 +103,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public String toString(Task task) {
-        String type = task.getClass().getSimpleName().toUpperCase();
+        String type = task.getType().name();
 
         StringBuilder builder = new StringBuilder();
         builder.append(task.getId()).append(",");
@@ -108,9 +112,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         builder.append(task.getStatus()).append(",");
         builder.append(task.getDescription()).append(",");
 
-        if (task instanceof Subtask subtask) {
-            builder.append(subtask.getEpicId());
-        }
+        builder.append(task.getType() == TaskType.SUBTASK ? ((Subtask) task).getEpicId() : "").append(",");
+
+        LocalDateTime startTime = task.getStartTime();
+        Duration duration = task.getDuration();
+
+        builder.append(startTime != null ? startTime : "").append(",");
+        builder.append(duration != null ? duration.toMinutes() : "");
 
         return builder.toString();
     }
@@ -119,7 +127,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         FileBackedTaskManager manager = new FileBackedTaskManager("tasks.csv");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String header = reader.readLine(); // пропускаем заголовок
+            String header = reader.readLine();
 
             String line;
             int id = 0;
@@ -135,7 +143,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                         Epic epic = (Epic) manager.tasks.get(sub.getEpicId());
                         if (epic != null) {
-                            epic.addSubTask(sub.getId());
+                            epic.addSubTask(sub);
                         }
                     }
                 }
@@ -153,32 +161,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
+        LocalDateTime startTime = LocalDateTime.of(2025, 5, 6, 10, 0);
         // Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
         Task shoppingTask = new Task("Сходить в магазин", "Купить продуктов на неделю",
-                InMemoryTaskManager.getNewId());
-        Task cleaningTask = new Task("Убраться дома", "Протереть пыль, помыть полы, убрать вещи",
-                InMemoryTaskManager.getNewId());
+                InMemoryTaskManager.getNewId(), startTime, 20);
+        Task cleaningTask = new Task("Убраться дома", "Протереть пыль",
+                InMemoryTaskManager.getNewId(), startTime.plusMinutes(40), 20);
         Epic understandingEncapsulationInOOP = new Epic("Пройти тему ООП. Инкапсуляция",
                 "Пройти все уроки и выполнить все упражнения", InMemoryTaskManager.getNewId());
         Subtask completeFirstLesson = new Subtask("Выполнить первый урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+                InMemoryTaskManager.getNewId(), startTime.plusMinutes(65), 30,
+                understandingEncapsulationInOOP.getId());
         Subtask completeSecondLesson = new Subtask("Выполнить второй урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+                InMemoryTaskManager.getNewId(), startTime.plusMinutes(100), 30,
+                understandingEncapsulationInOOP.getId());
         Subtask completeFirstLesson2 = new Subtask("Выполнить первый урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+                InMemoryTaskManager.getNewId(), startTime.plusMinutes(140), 30,
+                understandingEncapsulationInOOP.getId());
         Epic understandingEncapsulationInOOP2 = new Epic("Пройти тему ООП. Инкапсуляция",
                 "Пройти все уроки и выполнить все упражнения", InMemoryTaskManager.getNewId());
 
 
-        List<Integer> subtaskIds = new ArrayList<>();
-        subtaskIds.add(completeFirstLesson.getId());
-        subtaskIds.add(completeSecondLesson.getId());
-        subtaskIds.add(completeFirstLesson2.getId());
+        List<Subtask> subtasks = new ArrayList<>();
+        subtasks.add(completeFirstLesson);
+        subtasks.add(completeSecondLesson);
+        subtasks.add(completeFirstLesson2);
 
-        understandingEncapsulationInOOP.setSubTasks(subtaskIds);
+        understandingEncapsulationInOOP.setSubTasks(subtasks);
 
         TaskManager manager = Managers.getDefault();
         manager.createTask(shoppingTask);

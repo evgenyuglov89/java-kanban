@@ -7,6 +7,7 @@ import task.Epic;
 import task.Subtask;
 import task.Task;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ public class InMemoryHistoryManagerTest {
     private Task task1, task2, task3, task4, task5, task6, task7, task8;
     private Epic epic1, epic2;
     private Subtask subtask1, subtask2, subtask3, subtask4;
+    private LocalDateTime startTime;
 
     @BeforeEach
     void setUp() {
@@ -30,22 +32,23 @@ public class InMemoryHistoryManagerTest {
     }
 
     private void initTestData() {
-        task1 = createTask("Task1", "1");
-        task2 = createTask("Task2", "2");
-        task3 = createTask("Task3", "3");
-        task4 = createTask("Task4", "4");
-        task5 = createTask("Task5", "5");
-        task6 = createTask("Task6", "6");
-        task7 = createTask("Task7", "7");
-        task8 = createTask("Task8", "8");
+        startTime = LocalDateTime.of(2025, 5, 6, 10, 0);
+        task1 = createTask("Task1", "1", startTime, 20);
+        task2 = createTask("Task2", "2", startTime.plusMinutes(30), 20);
+        task3 = createTask("Task3", "3", startTime.plusMinutes(60), 20);
+        task4 = createTask("Task4", "4", startTime.plusMinutes(90), 20);
+        task5 = createTask("Task5", "5", startTime.plusMinutes(120), 20);
+        task6 = createTask("Task6", "6", startTime.plusMinutes(150), 20);
+        task7 = createTask("Task7", "7", startTime.plusMinutes(180), 20);
+        task8 = createTask("Task8", "8", startTime.plusMinutes(210), 20);
 
         epic1 = new Epic("Epic1", "1", InMemoryTaskManager.getNewId());
         epic2 = new Epic("Epic2", "2", InMemoryTaskManager.getNewId());
 
-        subtask1 = createSubtask("Subtask1", "1", epic1.getId());
-        subtask2 = createSubtask("Subtask2", "2", epic1.getId());
-        subtask3 = createSubtask("Subtask3", "3", epic2.getId());
-        subtask4 = createSubtask("Subtask4", "4", epic2.getId());
+        subtask1 = createSubtask("Subtask1", "1", epic1.getId(), startTime.plusMinutes(240), 20);
+        subtask2 = createSubtask("Subtask2", "2", epic1.getId(), startTime.plusMinutes(270), 20);
+        subtask3 = createSubtask("Subtask3", "3", epic2.getId(), startTime.plusMinutes(300), 20);
+        subtask4 = createSubtask("Subtask4", "4", epic2.getId(), startTime.plusMinutes(330), 20);
 
         List<Task> allTasks = List.of(task1, task2, task3, task4, task5, task6, task7, task8);
         allTasks.forEach(taskManager::createTask);
@@ -56,16 +59,16 @@ public class InMemoryHistoryManagerTest {
         List<Subtask> allSubtasks = List.of(subtask1, subtask2, subtask3, subtask4);
         allSubtasks.forEach(taskManager::createTask);
 
-        epic1.setSubTasks(List.of(subtask1.getId(), subtask2.getId()));
-        epic2.setSubTasks(List.of(subtask3.getId(), subtask4.getId()));
+        epic1.setSubTasks(List.of(subtask1, subtask2));
+        epic2.setSubTasks(List.of(subtask3, subtask4));
     }
 
-    private Task createTask(String title, String description) {
-        return new Task(title, description, InMemoryTaskManager.getNewId());
+    private Task createTask(String title, String description, LocalDateTime startTime, int duration) {
+        return new Task(title, description, InMemoryTaskManager.getNewId(), startTime, duration);
     }
 
-    private Subtask createSubtask(String title, String description, int epicId) {
-        return new Subtask(title, description, InMemoryTaskManager.getNewId(), epicId);
+    private Subtask createSubtask(String title, String description, int epicId, LocalDateTime startTime, int duration) {
+        return new Subtask(title, description, InMemoryTaskManager.getNewId(), startTime, duration, epicId);
     }
 
     @Test

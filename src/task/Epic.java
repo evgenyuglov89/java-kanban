@@ -1,45 +1,69 @@
 package task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
-    private List<Integer> subTasksIds;
+    private List<Subtask> subTasks;
 
     public Epic(String name, String description, int id) {
         super(name, description, id);
-        this.subTasksIds = new ArrayList<Integer>();
-        this.type = TaskType.EPIC;
+        this.subTasks = new ArrayList<Subtask>();
     }
 
-    public Epic(String name, String description, int id, List<Integer> subTasksIds, TaskStatus status) {
+    public Epic(String name, String description, int id, List<Subtask> subTasks, TaskStatus status) {
         super(name, description, id, status);
-        this.subTasksIds = subTasksIds;
-        this.type = TaskType.EPIC;
+        this.subTasks = subTasks;
     }
 
     public Epic(String name, String description, int id, TaskStatus status) {
         super(name, description, id, status);
-        this.subTasksIds = new ArrayList<>();
-        this.type = TaskType.EPIC;
+        this.subTasks = new ArrayList<>();
     }
 
-    public List<Integer> getSubTasks() {
-        return subTasksIds;
+    public List<Subtask> getSubTasks() {
+        return subTasks;
     }
 
-    public void setSubTasks(List<Integer> subTasks) {
-        this.subTasksIds = subTasks;
+    public void setSubTasks(List<Subtask> subTasks) {
+        this.subTasks = subTasks;
     }
 
-    public void addSubTask(int subTaskId) {
-        if (!subTasksIds.contains(subTaskId) && subTaskId != this.getId()) {
-            subTasksIds.add(subTaskId);
+    public void addSubTask(Subtask subtask) {
+        if (subtask == null || subtask.getId() == this.getId()) {
+            return;
+        }
+
+        boolean alreadyExists = subTasks.stream()
+                .anyMatch(s -> s.getId() == subtask.getId());
+
+        if (!alreadyExists) {
+            subTasks.add(subtask);
         }
     }
 
-    public void removeSubTask(int subTaskId) {
-        subTasksIds.remove(Integer.valueOf(subTaskId));
+    public void modifySubTask(Subtask subTask) {
+        int index = -1;
+        for (int i = 0; i < subTasks.size(); i++) {
+            if (subTasks.get(i).getId() == subTask.getId()) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1) {
+            subTasks.set(index, subTask);
+        } else {
+            subTasks.add(subTask);
+        }
+        System.out.println(this.getSubTasks());
+    }
+
+    public void removeSubTask(int subtaskId) {
+        subTasks.removeIf(subtask -> subtask.getId() == subtaskId);
     }
 
     @Override
@@ -49,7 +73,39 @@ public class Epic extends Task {
                 ", description='" + description + '\'' +
                 ", id=" + id +
                 ", status='" + status + '\'' +
-                ", subTasks=" + subTasksIds +
+                ", subTasks=" + subTasks +
                 '}';
     }
+
+    @Override
+    public LocalDateTime getStartTime() {
+        return subTasks.stream()
+                .map(Subtask::getStartTime)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+    }
+
+    @Override
+    public Duration getDuration() {
+        return subTasks.stream()
+                .map(Subtask::getDuration)
+                .filter(Objects::nonNull)
+                .reduce(Duration.ZERO, Duration::plus);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return subTasks.stream()
+                .map(Subtask::getEndTime)
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
+    }
+
 }

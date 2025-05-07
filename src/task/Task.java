@@ -12,7 +12,6 @@ public class Task {
     protected String description;
     protected int id;
     protected TaskStatus status;
-    protected TaskType type;
     protected Duration duration;
     protected LocalDateTime startTime;
 
@@ -21,7 +20,6 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = TaskStatus.NEW;
-        this.type = TaskType.TASK;
         this.startTime = InMemoryTaskManager.UNDEFINED_TIME;
         this.duration = Duration.ZERO;
     }
@@ -31,7 +29,6 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
-        this.type = TaskType.TASK;
         this.startTime = InMemoryTaskManager.UNDEFINED_TIME;
         this.duration = Duration.ZERO;
     }
@@ -41,7 +38,6 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = TaskStatus.NEW;
-        this.type = TaskType.TASK;
         this.startTime = startTime;
         this.duration = Duration.ofMinutes(durationInMinutes);
     }
@@ -130,7 +126,7 @@ public class Task {
     }
 
     public TaskType getType() {
-        return type;
+        return TaskType.TASK;
     }
 
     public Duration getDuration() {

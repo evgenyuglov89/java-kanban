@@ -238,14 +238,12 @@ public class InMemoryTaskManager implements TaskManager {
             return true;
         }
 
-        return tasksSortedByStartTime.stream()
+        return !tasksSortedByStartTime.stream()
                 .filter(existing -> !existing.getStartTime().isEqual(UNDEFINED_TIME))
                 .filter(existing -> existing.getId() != task.getId())
-                .noneMatch(existing -> {
-                    LocalDateTime existStart = existing.getStartTime();
-                    LocalDateTime existEnd = existing.getEndTime();
-                    return newStart.isBefore(existEnd) && newEnd.isAfter(existStart);
-                });
+                .anyMatch(existing ->
+                        newStart.isBefore(existing.getEndTime()) && newEnd.isAfter(existing.getStartTime())
+                );
     }
 
     public List<Task> getSortedTasksByTime() {
@@ -253,7 +251,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void addTaskIfHasTime(Task task) {
-        if (!task.getStartTime().isEqual(UNDEFINED_TIME)) {
+        LocalDateTime startTime = task.getStartTime();
+        if (startTime != null && !startTime.isEqual(UNDEFINED_TIME)) {
             tasksSortedByStartTime.add(task);
         }
     }

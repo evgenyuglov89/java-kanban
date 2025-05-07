@@ -12,19 +12,16 @@ public class Epic extends Task {
     public Epic(String name, String description, int id) {
         super(name, description, id);
         this.subTasks = new ArrayList<Subtask>();
-        this.type = TaskType.EPIC;
     }
 
     public Epic(String name, String description, int id, List<Subtask> subTasks, TaskStatus status) {
         super(name, description, id, status);
         this.subTasks = subTasks;
-        this.type = TaskType.EPIC;
     }
 
     public Epic(String name, String description, int id, TaskStatus status) {
         super(name, description, id, status);
         this.subTasks = new ArrayList<>();
-        this.type = TaskType.EPIC;
     }
 
     public List<Subtask> getSubTasks() {
@@ -105,4 +102,10 @@ public class Epic extends Task {
                 .max(LocalDateTime::compareTo)
                 .orElse(null);
     }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.EPIC;
+    }
+
 }

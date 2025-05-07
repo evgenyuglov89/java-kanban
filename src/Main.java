@@ -2,40 +2,46 @@ import manager.*;
 import task.Epic;
 import task.Subtask;
 import task.Task;
+import task.TaskStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
+        LocalDateTime baseTime = LocalDateTime.of(2025, 5, 6, 10, 0);
 
         // Создайте две задачи, эпик с тремя подзадачами и эпик без подзадач.
         Task shoppingTask = new Task("Сходить в магазин", "Купить продуктов на неделю",
-                InMemoryTaskManager.getNewId());
+                InMemoryTaskManager.getNewId(), baseTime, 10);
         Task cleaningTask = new Task("Убраться дома", "Протереть пыль, помыть полы, убрать вещи",
-                InMemoryTaskManager.getNewId());
+                InMemoryTaskManager.getNewId(), baseTime.plusHours(1), 20);
         Epic understandingEncapsulationInOOP = new Epic("Пройти тему ООП. Инкапсуляция",
                 "Пройти все уроки и выполнить все упражнения", InMemoryTaskManager.getNewId());
         Subtask completeFirstLesson = new Subtask("Выполнить первый урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+                InMemoryTaskManager.getNewId(), baseTime.plusHours(3), 60,
+                understandingEncapsulationInOOP.getId());
         Subtask completeSecondLesson = new Subtask("Выполнить второй урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+                InMemoryTaskManager.getNewId(), baseTime.plusHours(4), 40,
+                understandingEncapsulationInOOP.getId());
         Subtask completeFirstLesson2 = new Subtask("Выполнить первый урок",
                 "Прочитать теорию и выполнить практику",
-                InMemoryTaskManager.getNewId(), understandingEncapsulationInOOP.getId());
+                InMemoryTaskManager.getNewId(), baseTime.plusHours(5), 80,
+                understandingEncapsulationInOOP.getId());
         Epic understandingEncapsulationInOOP2 = new Epic("Пройти тему ООП. Инкапсуляция",
                 "Пройти все уроки и выполнить все упражнения", InMemoryTaskManager.getNewId());
 
 
-        List<Integer> subtaskIds = new ArrayList<>();
-        subtaskIds.add(completeFirstLesson.getId());
-        subtaskIds.add(completeSecondLesson.getId());
-        subtaskIds.add(completeFirstLesson2.getId());
+        List<Subtask> subtasks = new ArrayList<>();
+        subtasks.add(completeFirstLesson);
+        subtasks.add(completeSecondLesson);
+        subtasks.add(completeFirstLesson2);
 
-        understandingEncapsulationInOOP.setSubTasks(subtaskIds);
+        understandingEncapsulationInOOP.setSubTasks(subtasks);
 
         TaskManager manager = Managers.getDefault();
         HistoryManager historyManager = manager.getHistoryManager();

@@ -34,4 +34,6 @@ public interface TaskManager {
     List<Task> getAllSubTasks();
 
     List<Task> getAllTasks();
+
+    List<Task> getSortedTasksByTime();
 }

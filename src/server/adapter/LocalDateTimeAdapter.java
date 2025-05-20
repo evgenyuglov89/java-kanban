@@ -9,16 +9,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-    private final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
+    private final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
 
     @Override
     public void write(final JsonWriter jsonWriter, final LocalDateTime localDate) throws IOException {
-        jsonWriter.value(localDate.format(DATE_TIME_FORMAT));
+        jsonWriter.value(localDate.format(dateTimeFormat));
     }
 
     @Override
     public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-        return LocalDateTime.parse(jsonReader.nextString(), DATE_TIME_FORMAT);
+        return LocalDateTime.parse(jsonReader.nextString(), dateTimeFormat);
     }
 
 }

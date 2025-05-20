@@ -114,13 +114,4 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
         sendMethodNotAllowed(exchange);
     }
-
-    private Epic getEpicTaskById(int id) throws NotFoundException {
-        return taskManager.getAllEpics().stream()
-                .filter(task -> task.getId() == id)
-                .map(task -> (Epic) task)
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Задача не найдена в списке. id: " + id));
-    }
 }
-

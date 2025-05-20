@@ -136,7 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
+    public void updateTask(Task task) throws TaskScheduleConflictException {
         TaskType type = task.getType();
 
         if (type != TaskType.EPIC && !isTimeSlotAvailable(task)) {

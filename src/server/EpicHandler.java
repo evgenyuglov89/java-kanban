@@ -57,20 +57,20 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
         if (EPIC_ID_PATTERN.matcher(path).matches()) {
             int id = parseTaskId(path.replaceFirst("/epics/", ""));
-            Epic epicTask = (Epic) taskManager.getById(id);
-            if (epicTask != null) {
-                sendResponse(exchange, getGson().toJson(epicTask));
+            Epic epic = (Epic) taskManager.getById(id);
+            if (epic != null) {
+                sendResponse(exchange, getGson().toJson(epic));
             } else {
-                sendNotFound(exchange, "Task with id=" + id + " not found");
+                sendNotFound(exchange, "Epic with id=" + id + " not found");
             }
             return;
         }
 
         if (EPIC_SUBTASKS_PATTERN.matcher(path).matches()) {
-            int id = parseTaskId(path.replaceFirst("/epics/", "").
-                    replaceFirst("/subtasks", ""));
-            Epic epicTask = (Epic) taskManager.getById(id);
-            sendResponse(exchange, getGson().toJson(epicTask.getSubTasks()));
+            int id = parseTaskId(path.replaceFirst("/epics/", "")
+                            .replaceFirst("/subtasks", ""));
+            Epic epic = (Epic) taskManager.getById(id);
+            sendResponse(exchange, getGson().toJson(epic.getSubTasks()));
             return;
         }
 

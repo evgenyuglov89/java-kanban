@@ -42,7 +42,8 @@ public class BaseHttpHandler {
         sendRawResponse(exchange, HttpCodeResponse.SERVER_ERROR, message, true);
     }
 
-    private void sendRawResponse(HttpExchange exchange, HttpCodeResponse status, String body, boolean isJson) throws IOException {
+    private void sendRawResponse(HttpExchange exchange, HttpCodeResponse status, String body, boolean isJson)
+            throws IOException {
         byte[] response = body.getBytes(StandardCharsets.UTF_8);
         if (isJson) {
             exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");

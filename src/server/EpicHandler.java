@@ -3,7 +3,7 @@ package server;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exception.NotFoundException;
-import exception.TaskTimeOverlapException;
+import exception.TaskScheduleConflictException;
 import manager.TaskManager;
 import task.Epic;
 
@@ -33,7 +33,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 case DELETE -> handleDelete(httpExchange);
                 default -> sendMethodNotAllowed(httpExchange);
             }
-        } catch (TaskTimeOverlapException e) {
+        } catch (TaskScheduleConflictException e) {
             System.out.println(e.getMessage());
             sendHasOverlap(httpExchange);
         } catch (NotFoundException e) {
@@ -77,7 +77,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         sendMethodNotAllowed(exchange);
     }
 
-    private void handlePost(HttpExchange exchange) throws IOException, TaskTimeOverlapException {
+    private void handlePost(HttpExchange exchange) throws IOException, TaskScheduleConflictException {
         String path = exchange.getRequestURI().getPath();
         if (!EPICS_PATTERN.matcher(path).matches()) {
             sendMethodNotAllowed(exchange);

@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exception.NotFoundException;
 import exception.TaskScheduleConflictException;
-import exception.TaskTimeOverlapException;
 import manager.TaskManager;
 import task.Subtask;
 import task.Task;
@@ -32,11 +31,9 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
                 case DELETE -> handleDelete(httpExchange);
                 default -> sendMethodNotAllowed(httpExchange);
             }
-        } catch (TaskTimeOverlapException e) {
-            System.out.println(e.getMessage());
+        } catch (TaskScheduleConflictException e) {
             sendHasOverlap(httpExchange);
         } catch (NotFoundException e) {
-            System.out.println(e.getMessage());
             sendNotFound(httpExchange, e.getMessage());
         } catch (Exception e) {
             sendServerError(httpExchange, e.getMessage());
@@ -67,7 +64,7 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         sendMethodNotAllowed(exchange);
     }
 
-    private void handlePost(HttpExchange exchange) throws IOException, TaskTimeOverlapException {
+    private void handlePost(HttpExchange exchange) throws IOException, TaskScheduleConflictException {
         String path = exchange.getRequestURI().getPath();
 
         if (!SUBTASKS_PATTERN.matcher(path).matches()) {
@@ -78,15 +75,12 @@ public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
         String body = new String(exchange.getRequestBody().readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
         Subtask subTask = getGson().fromJson(body, Subtask.class);
 
-        try {
-            if (subTask.getId() == 0) {
-                taskManager.createTask(subTask);
-            } else {
-                taskManager.updateTask(subTask);
-            }
-        } catch (TaskScheduleConflictException e) {
-            sendHasOverlap(exchange);
+        if (subTask.getId() == 0) {
+            taskManager.createTask(subTask);
+        } else {
+            taskManager.updateTask(subTask);
         }
+
         exchange.sendResponseHeaders(HttpCodeResponse.MODIFIED.getCode(), 0);
     }
 

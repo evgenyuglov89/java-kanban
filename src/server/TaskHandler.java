@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exception.NotFoundException;
 import exception.TaskScheduleConflictException;
-import exception.TaskTimeOverlapException;
 import manager.TaskManager;
 import task.Task;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +33,7 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 default -> sendMethodNotAllowed(httpExchange);
             }
 
-        } catch (TaskTimeOverlapException e) {
+        } catch (TaskScheduleConflictException e) {
             System.out.println(e.getMessage());
             sendHasOverlap(httpExchange);
         } catch (NotFoundException e) {
@@ -93,24 +92,20 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         sendMethodNotAllowed(exchange);
     }
 
-    private void handlePost(HttpExchange exchange) throws IOException, TaskTimeOverlapException {
+    private void handlePost(HttpExchange exchange) throws IOException, TaskScheduleConflictException {
         String path = exchange.getRequestURI().getPath();
 
         if (COLLECTION_PATH.matcher(path).matches()) {
             String body = readRequestBody(exchange);
             Task task = getGson().fromJson(body, Task.class);
 
-            try {
-                if (task.getId() == 0) {
-                    taskManager.createTask(task);
-                } else {
-                    taskManager.updateTask(task);
-                }
-
-                exchange.sendResponseHeaders(HttpCodeResponse.MODIFIED.getCode(), 0);
-            } catch (TaskScheduleConflictException e) {
-                sendHasOverlap(exchange);
+            if (task.getId() == 0) {
+                taskManager.createTask(task);
+            } else {
+                taskManager.updateTask(task);
             }
+
+            exchange.sendResponseHeaders(HttpCodeResponse.MODIFIED.getCode(), 0);
         } else {
             sendMethodNotAllowed(exchange);
         }
